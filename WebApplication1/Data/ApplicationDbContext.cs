@@ -1,4 +1,7 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Mvc.ModelBinding;
+using Microsoft.EntityFrameworkCore;
+using System.Reflection;
+using WebApplication1.Data.Configurations;
 using WebApplication1.Entities;
 
 namespace WebApplication1.Data
@@ -9,6 +12,17 @@ namespace WebApplication1.Data
         {
         }
 
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            //modelBuilder.Entity<Category>()
+            //    .HasData(
+            //    new Category { Id = 1, Name = "New Category1" },
+            //    new Category { Id = 2, Name = "New Category2" }
+            //    );
+
+
+            modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
+        }
         public DbSet<Product> Products { get; set; }
         public DbSet<Category> Categories { get; set; }
     }

@@ -1,12 +1,12 @@
-
 using Microsoft.EntityFrameworkCore;
 using WebApplication1.Data;
+using WebApplication1.Helper;
 
 namespace WebApplication1
 {
     public class Program
     {
-        public static void Main(string[] args)
+        public static async Task Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
 
@@ -23,7 +23,32 @@ namespace WebApplication1
                     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultSqlConnection"))
                 );
 
+            //builder.Services.AddAutoMapper(typeof(ProductProfile));
+            builder.Services.AddAutoMapper(cfg =>
+            {
+                cfg.AddProfile<ProductProfile>();
+            });
+
             var app = builder.Build();
+
+            // Automatic Migration
+            using var scope = app.Services.CreateScope();
+            var services = scope.ServiceProvider;
+            var loggerFactory = services.GetRequiredService<ILoggerFactory>();
+
+            try
+            {
+                using var dbContext = services.GetRequiredService<ApplicationDbContext>();
+                await dbContext.Database.MigrateAsync();
+                await StoreContextSeeding.SeedAsync(dbContext); // Data Seeding
+            }
+            catch (Exception ex)
+            {
+                var logger = loggerFactory.CreateLogger<Program>();
+
+                logger.LogError(ex, ex.Message);
+            }
+
 
             // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())
