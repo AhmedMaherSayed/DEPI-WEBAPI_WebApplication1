@@ -22,6 +22,8 @@ namespace WebApplication1.Data
 
 
             modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
+
+            modelBuilder.Entity<Product>().HasQueryFilter(p => !p.IsDeleted);
         }
         public DbSet<Product> Products { get; set; }
         public DbSet<Category> Categories { get; set; }

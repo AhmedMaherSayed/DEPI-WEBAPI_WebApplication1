@@ -1,5 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using WebApplication1.Data;
+using WebApplication1.Data.Interceptors;
+using WebApplication1.Extensions;
 using WebApplication1.Helper;
 
 namespace WebApplication1
@@ -14,21 +16,8 @@ namespace WebApplication1
 
             builder.Services.AddControllers();
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
-            builder.Services.AddEndpointsApiExplorer();
-            builder.Services.AddSwaggerGen();
 
-            // Register DbContext as a service in IoC inversion of Control
-            builder.Services.AddDbContext<ApplicationDbContext>(options =>
-
-                    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultSqlConnection"))
-                );
-
-            //builder.Services.AddAutoMapper(typeof(ProductProfile));
-            builder.Services.AddAutoMapper(cfg =>
-            {
-                cfg.AddProfile<ProductProfile>();
-            });
-
+            builder.Services.AddServices(builder.Configuration);
             var app = builder.Build();
 
             // Automatic Migration
